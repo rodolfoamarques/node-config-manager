@@ -1,0 +1,85 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+
+    //#region --- Projects ---
+    "incremental": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "tsBuildInfoFile": ".tsbuildinfo",
+    //#endregion -------------
+
+    //#region --- Language and Environment ---
+    "lib": ["ESNext"],
+    "noLib": false,
+    "target": "ESNext",
+    "types": ["node"],
+    //#endregion -----------------------------
+
+    //#region --- Modules ---
+    "allowImportingTsExtensions": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "rewriteRelativeImportExtensions": true,
+    //#endregion ------------
+
+    //#region --- JavaScript Support ---
+    "allowJs": false,
+    //#endregion -----------------------
+
+    //#region --- Emit ---
+    "declaration": true,
+    "declarationMap": false,
+    "emitBOM": false,
+    "emitDeclarationOnly": false,
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "listEmittedFiles": false,
+    "noEmit": false,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": true,
+    //#endregion ---------
+
+    //#region --- Interop Constraints ---
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    //#endregion ------------------------
+
+    //#region --- Type Checking ---
+    "allowUnreachableCode": true,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    //#endregion -------------
+
+    //#region --- Completeness ---
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
+    //#endregion -----------------
+  },
+  "exclude": [
+    "./__tests__",
+    "./build",
+    "./coverage",
+    "./dist",
+    "./node_modules"
+  ],
+  "include": [
+    "./src/**/*"
+  ]
+}
