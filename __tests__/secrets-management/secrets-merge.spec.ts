@@ -20,20 +20,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
     SECRET_H: 'secret_h',
   };
 
-  async function mockMerger(): Promise<import('../../src/secrets-management/secrets-merge.ts')> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const mod = await esmock('../../src/secrets-management/secrets-merge.ts', {
-        replaceStringValue: replaceStringValueStub,
-      });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      return mod.default;
-    }
-    finally {
-      // NO empty statement
-    }
-  }
-
   beforeEach(async (): Promise<void> => {
     replaceStringValueStub = sinon.stub().callsFake(
       (value: string, secrets: Record<string, unknown>): string => {
@@ -42,16 +28,14 @@ describe('Secrets Management - populateSecrets()', (): void => {
       },
     );
 
-    const mockFilepath: string = new URL('../../src/secrets-management/secrets-merge.ts', import.meta.url).pathname;
-    const depFilepath: string = new URL('../../src/utils/replace-string.ts', import.meta.url).pathname;
+    const mergeModulePath: string = new URL('../../src/secrets-management/secrets-merge.ts', import.meta.url).pathname;
+    const replaceStringModulePath: string = new URL('../../src/utils/index.ts', import.meta.url).pathname;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const module = await esmock(mockFilepath, import.meta.url, {
-      [depFilepath]: { replaceStringValue: replaceStringValueStub },
+    const module = await esmock(mergeModulePath, import.meta.url, {
+      [replaceStringModulePath]: { replaceStringValue: replaceStringValueStub },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-    populateSecrets = module.populateSecrets;
+    populateSecrets = module.populateSecrets as typeof populateSecrets;
   });
 
   afterEach((): void => {
@@ -65,7 +49,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(undefined as unknown as Record<string, unknown>, secrets);
 
       expect(result).to.equal(undefined);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -73,7 +56,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(null as unknown as Record<string, unknown>, secrets);
 
       expect(result).to.equal(null);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -81,7 +63,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(123 as unknown as Record<string, unknown>, {});
 
       expect(result).to.equal(123);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -89,7 +70,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(true as unknown as Record<string, unknown>, {});
 
       expect(result).to.equal(true);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -97,7 +77,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets('test-input' as unknown as Record<string, unknown>, {});
 
       expect(result).to.equal('test-input');
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -111,7 +90,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -121,7 +99,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -131,7 +108,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -141,7 +117,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -151,7 +126,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -160,9 +134,14 @@ describe('Secrets Management - populateSecrets()', (): void => {
 
       const result = populateSecrets(input, secrets);
 
+      // - NOTE: stub delegates to the real implementation, so values without interpolation tokens pass through unchanged
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
+
+      // - NOTE: replaceStringValue is called once per string-valued property
       sinon.assert.callCount(replaceStringValueStub, 2);
+      // - NOTE: verify the stub was called with the correct arguments for each key
+      sinon.assert.calledWith(replaceStringValueStub, 'hi', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, 'hello', secrets);
     });
 
   });
@@ -173,7 +152,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets([] as unknown as Record<string, unknown>, {});
 
       expect(result).to.eql([]);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -183,7 +161,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -193,7 +170,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -203,7 +179,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -213,7 +188,6 @@ describe('Secrets Management - populateSecrets()', (): void => {
       const result = populateSecrets(input, secrets);
 
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
       sinon.assert.callCount(replaceStringValueStub, 0);
     });
 
@@ -222,9 +196,15 @@ describe('Secrets Management - populateSecrets()', (): void => {
 
       const result = populateSecrets(input, secrets);
 
+      // - NOTE: stub delegates to real impl; no tokens → values unchanged
       expect(result).to.eql(input);
-      // sinon.assert.callCount(populateSecretsSpy, 1);
+
+      // - NOTE: replaceStringValue is called once per string element
       sinon.assert.callCount(replaceStringValueStub, 3);
+      // - NOTE: verify each string element was forwarded to the stub with the secrets map
+      sinon.assert.calledWith(replaceStringValueStub, 'hello', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, 'there', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, 'general kenobi', secrets);
     });
 
   });
@@ -236,23 +216,71 @@ describe('Secrets Management - populateSecrets()', (): void => {
 
       const result = populateSecrets(input, secrets);
 
-      expect(result).to.eql([
-        123,
-        'secret_a',
-        true,
-        null,
-        [],
-        undefined,
-        {},
-      ]);
+      expect(result).to.eql([ 123, 'secret_a', true, null, [], undefined, {} ]);
+
+      // - NOTE: Only the one string element triggers a replaceStringValue call
+      sinon.assert.callCount(replaceStringValueStub, 1);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_A}', secrets);
     });
 
     it('should recursively populate secrets where applicable - object input', (): void => {
-      const input = {};
+      const input: Record<string, unknown> = {
+        a: '${SECRET_A}',
+        b: {
+          c: '${SECRET_B}',
+          d: {
+            e: '${SECRET_C}',
+          },
+        },
+        f: ['${SECRET_D}', '${SECRET_E}'],
+        g: 42,
+        h: null,
+      };
 
       const result = populateSecrets(input, secrets);
 
-      expect(result).to.eql({});
+      expect(result).to.eql({
+        a: 'secret_a',
+        b: {
+          c: 'secret_b',
+          d: {
+            e: 'secret_c',
+          },
+        },
+        f: ['secret_d', 'secret_e'],
+        g: 42,
+        h: null,
+      });
+    
+      // - NOTE: replaceStringValue is called once per string element
+      sinon.assert.callCount(replaceStringValueStub, 5);
+      // - NOTE: verify each string element was forwarded to the stub with the secrets map
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_A}', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_B}', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_C}', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_D}', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_E}', secrets);
+    });
+
+    it('should recursively populate secrets - nested array of objects', (): void => {
+      const input = [
+        { x: '${SECRET_F}' },
+        { y: '${SECRET_G}', z: '${SECRET_H}' },
+      ] as unknown as Record<string, unknown>;
+
+      const result = populateSecrets(input, secrets);
+
+      expect(result).to.eql([
+        { x: 'secret_f' },
+        { y: 'secret_g', z: 'secret_h' },
+      ]);
+
+      // - NOTE: replaceStringValue is called once per string element
+      sinon.assert.callCount(replaceStringValueStub, 3);
+      // - NOTE: verify each string element was forwarded to the stub with the secrets map
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_F}', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_G}', secrets);
+      sinon.assert.calledWith(replaceStringValueStub, '${SECRET_H}', secrets);
     });
 
   });
