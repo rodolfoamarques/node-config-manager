@@ -10,9 +10,17 @@
   },
   "description": "Config Management library for NodeJS applications",
   "devDependencies": {
+    "@types/chai": "5.2.3",
     "@types/js-yaml": "4.0.9",
+    "@types/mocha": "10.0.10",
     "@types/node": "26.0.0",
+    "@types/sinon": "21.0.1",
+    "c8": "11.0.0",
+    "chai": "6.2.2",
+    "esmock": "2.7.6",
+    "mocha": "11.7.6",
     "rimraf": "6.1.3",
+    "sinon": "22.0.0",
     "typescript": "6.0.3"
   },
   "exports": {
@@ -31,6 +39,32 @@
   ],
   "license": "MIT",
   "main": "./dist/index.js",
+  "mocha": {
+    "check-leaks": true,
+    "color": true,
+    "diff": true,
+    "exit": true,
+    "extension": [
+      "ts",
+      "cjs",
+      "mjs",
+      "cts",
+      "mts"
+    ],
+    "inspect": 9231,
+    "parallel": false,
+    "recursive": true,
+    "reporter": "spec",
+    "reporter-option": [
+      "maxDiffSize=0"
+    ],
+    "slow": 1000,
+    "spec": [
+      "__tests__/**/*.spec.ts"
+    ],
+    "timeout": 5000,
+    "ui": "bdd"
+  },
   "module": "./dist/index.js",
   "name": "node-config-manager",
   "repository": {
@@ -39,10 +73,11 @@
   },
   "scripts": {
     "build": "tsc --build tsconfig.json",
-    "clean": "yarn clean:build",
+    "clean": "yarn clean:build && yarn clean:test",
     "clean:build": "tsc --build --clean && rimraf build dist",
-    "reset": "yarn clean && rimraf node_modules",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean:test": "rimraf coverage",
+    "reset": "yarn clean && rimraf node_modules && rm yarn.lock",
+    "test": "yarn clean:test && c8 -c .c8rc.json mocha"
   },
   "type": "module",
   "types": "./dist/index.d.ts",

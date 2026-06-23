@@ -1,0 +1,30 @@
+{
+  "all": true,
+  "clean": true,
+  "checkCoverage": true,
+  "branches": 95,
+  "functions": 95,
+  "lines": 95,
+  "statements": 95,
+  "per-file": true,
+  "extension": [
+    ".cjs",
+    ".cts",
+    ".js",
+    ".jsx",
+    ".mjs",
+    ".mts",
+    ".ts",
+    ".tsx"
+  ],
+  "include": [],
+  "reporter": [
+    "json",
+    "html",
+    "text"
+  ],
+  "reports-dir": "./coverage",
+  "src": [
+    "./src/**/*"
+  ]
+}
