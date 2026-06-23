@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "outDir": "./dist-test",
+    "rootDir": "./"
+  },
+  "exclude": [
+    "./build",
+    "./coverage",
+    "./dist",
+    "./node_modules"
+  ],
+  "extends": "./tsconfig.json",
+  "include": [
+    "./__tests__/**/*",
+    "./src/**/*"
+  ]
+}
