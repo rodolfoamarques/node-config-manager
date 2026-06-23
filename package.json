@@ -1,0 +1,35 @@
+{
+  "author": "Rodolfo Marques",
+  "bugs": {
+    "url": "https://github.com/rodolfoamarques/node-config-manager/issues"
+  },
+  "description": "Config Management library for NodeJS applications",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "node": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "homepage": "https://github.com/rodolfoamarques/node-config-manager#readme",
+  "keywords": [
+    "Configuration",
+    "Library",
+    "NodeJS"
+  ],
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "name": "node-config-manager",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodolfoamarques/node-config-manager.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "version": "1.0.0"
+}
